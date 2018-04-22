@@ -1,12 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
-import { createHttpError } from 'http-errors';
+import createHttpError from 'http-errors';
+import jwt from 'jsonwebtoken';
 import connectToDb from './config/database-connection';
 import logger from './config/app-logger';
 import users from './routes/users.route';
 import signin from './routes/signin.route';
 import signup from './routes/signup.route';
+import config from './config/config';
 
 /**
  * The server.
@@ -40,6 +42,7 @@ class Server {
       }
     };
 
+    this.app.set('superSecret', config.SECRET);
     this.app.set('view engine', 'jade');
     this.app.set('views', path.join(__dirname, 'views'));
     this.app.use(bodyParser.json());
@@ -62,15 +65,29 @@ class Server {
     // get router
     const router = express.Router();
 
-    router.get('/', (req, res, next) => {
-      res.json({
-        message: 'Hello World!',
-      });
-    });
-    this.app.use('/', router);
-    this.app.use('/users', users);
     this.app.use('/signin', signin);
     this.app.use('/signup', signup);
+
+    //
+    router.use((req, res, next) => {
+      const { token } = req.headers;
+
+      if (token) {
+        return jwt.verify(token, req.app.get('superSecret'), (err, decoded) => {
+          if (err) {
+            return next(createHttpError(401));
+          }
+          req.decoded = decoded;
+          return next();
+        });
+      }
+
+      return next(createHttpError(403));
+    });
+
+    this.app.use('*', router);
+    this.app.use('/', router);
+    this.app.use('/users', users);
   }
 }
 const server = Server.bootstrap();
