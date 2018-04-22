@@ -12,16 +12,13 @@ UserSchema.plugin(uniqueValidator);
 
 const UsersModel = mongoose.model('User', UserSchema);
 
-UsersModel.getAll = () => {
-  return UsersModel.find({});
-};
+UsersModel.getAll = () => UsersModel.find({});
 
-UsersModel.add = userToAdd => {
-  return userToAdd.save();
-};
+UsersModel.add = userToAdd => userToAdd.save();
 
-UsersModel.remove = userName => {
-  return UsersModel.remove({ name: userName });
-};
+UsersModel.remove = userName => UsersModel.remove({ name: userName });
+
+UsersModel.findByUserNameAndPassword = (username, pass) =>
+  UsersModel.findOne({ email: username, password: pass });
 
 export default UsersModel;

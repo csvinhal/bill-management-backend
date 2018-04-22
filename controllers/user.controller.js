@@ -9,36 +9,36 @@ controller.getAll = async (req, res) => {
     logger.info('sending all users...');
     res.send(users);
   } catch (err) {
-    logger.error('Error in getting users- ' + err);
+    logger.error(`rror in getting users- ${err}`);
     res.send('Got error in getAll');
   }
 };
 
 controller.add = async (req, res) => {
-  let userToAdd = UsersModel({
+  const userToAdd = UsersModel({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
   });
   try {
     const savedUser = await UsersModel.add(userToAdd);
     logger.info('Adding user...');
-    res.send('added: ' + savedUser);
+    res.send(`added: ${savedUser}`);
   } catch (err) {
-    logger.error('Error in adding user- ' + err);
+    logger.error(`Error in adding user- ${err}`);
     res.send('Got error in getAll');
   }
 };
 
 controller.delete = async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   try {
     const removedUser = await UsersModel.findByIdAndRemove(id);
-    logger.info('Deleted User- ' + removedUser);
+    logger.info(`Deleted User- ${removedUser}`);
     res.send('User successfully deleted');
   } catch (err) {
-    logger.error('Failed to delete user- ' + err);
+    logger.error(`Failed to delete user- ${err}`);
     res.send('Delete failed..!');
   }
 };

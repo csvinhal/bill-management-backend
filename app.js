@@ -5,6 +5,8 @@ import { createHttpError } from 'http-errors';
 import connectToDb from './config/database-connection';
 import logger from './config/app-logger';
 import users from './routes/users.route';
+import signin from './routes/signin.route';
+import signup from './routes/signup.route';
 
 /**
  * The server.
@@ -62,11 +64,13 @@ class Server {
 
     router.get('/', (req, res, next) => {
       res.json({
-        message: 'Hello World!'
+        message: 'Hello World!',
       });
     });
     this.app.use('/', router);
     this.app.use('/users', users);
+    this.app.use('/signin', signin);
+    this.app.use('/signup', signup);
   }
 }
 const server = Server.bootstrap();
